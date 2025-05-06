@@ -1,15 +1,9 @@
 from __future__ import annotations
 from enums import PlayerPosition
-
-# Do not change the import statement below
-# If you need more modules and classes from datetime, do not use
-# separate import statements. Use them from datetime like this:
-# datetime.datetime, or datetime.date, etc.
 import datetime
 
 
 class Player:
-
     def __init__(self, name: str, position: PlayerPosition, age: int) -> None:
         """
         Constructor for the Player class
@@ -20,23 +14,33 @@ class Player:
             age (int): The age of the player
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1)
+            Worst Case Complexity: O(1)
         """
-        raise NotImplementedError
+        self.name = name
+        # Calculate birth year based on current year and age
+        current_year = datetime.datetime.now().year
+        self.birth_year = current_year - age
+        self.position = position
+        self.goals = 0
+        # Initialize statistics storage using HashTableSeparateChaining
+        from data_structures.hash_table_separate_chaining import HashTableSeparateChaining
+        self.stats = HashTableSeparateChaining()
 
     def reset_stats(self) -> None:
         """
         Reset the stats of the player.
-        
+
         This doesn't delete the existing stats, but resets them to 0.
         I.e. all stats that were previously set should still be available, with a value of 0.
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1), when there are no stats
+            Worst Case Complexity: O(N), where N is the number of statistics
         """
-        raise NotImplementedError
+        stat_keys = self.stats.keys()
+        for i in range(len(stat_keys)):
+            self.stats[stat_keys[i]] = 0
 
     def __setitem__(self, statistic: str, value: int) -> None:
         """
@@ -47,10 +51,10 @@ class Player:
             value (int): The value of the stat
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(K), where K is the length of the statistic string
+            Worst Case Complexity: O(N * K), where N is the number of items in the stats table, K is the length of the statistic string
         """
-        raise NotImplementedError
+        self.stats[statistic] = value
 
     def __getitem__(self, statistic: str) -> int:
         """
@@ -63,10 +67,13 @@ class Player:
             int: The value of the stat
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(K), where K is the length of the statistic string
+            Worst Case Complexity: O(N * K), where N is the number of items in the stats table, K is the length of the statistic string
         """
-        raise NotImplementedError
+        try:
+            return self.stats[statistic]
+        except KeyError:
+            raise KeyError(statistic)
 
     def get_age(self) -> int:
         """
@@ -76,27 +83,17 @@ class Player:
             int: The age of the player
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1)
+            Worst Case Complexity: O(1)
         """
-        raise NotImplementedError
+        current_year = datetime.datetime.now().year
+        return current_year - self.birth_year
 
     def __str__(self) -> str:
         """
-        Optional but highly recommended.
-
-        You may choose to implement this method to help you debug.
-        However your code must not rely on this method for its functionality.
-
-        Returns:
-            str: The string representation of the player object.
-
-        Complexity Analysis not required.
+        String representation of the Player object for debugging.
         """
-        return "...String Representation of Player..."
+        return f"Player(name={self.name}, position={self.position}, age={self.get_age()}, goals={self.goals})"
 
     def __repr__(self) -> str:
-        """ String representation of the Player object.
-        Useful for debugging or when the Player is held in another data structure.
-        """
         return str(self)
