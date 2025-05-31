@@ -73,7 +73,7 @@ class Season:
         """
         self.teams = teams
         self.leaderboard = ArrayList()
-        # Initialize leaderboard with teams and all teams start with 0 points
+        # Initialize leaderboard with teams (all teams start with 0 points)
         for i in range(len(teams)):
             self.leaderboard.append(teams[i])
         # Generate schedule using _generate_schedule
@@ -121,6 +121,7 @@ class Season:
 
         for flipped_week in flipped_weeks:
             weekly_games.append(flipped_week)
+
         return weekly_games
 
     def update_leaderboard(self) -> None:
@@ -167,9 +168,22 @@ class Season:
             Worst Case Complexity: O(G * (N^2 + P + GS * P)) = O(N^2 * (N^2 + P))
         """
         simulator = GameSimulator()
-        for week in self.schedule:
-            for game in week:
+        for week_idx in range(len(self.schedule)):
+            week = self.schedule[week_idx]
+            # print(f"\n=== Week {week.week} ===")
+            for game_idx in range(len(week.games)):
+                game = week.games[game_idx]
+                # Simulate the game
                 outcome = simulator.simulate(game.home_team, game.away_team)
+
+                # Print match result
+                # result = "Draw"
+                # if outcome.home_goals > outcome.away_goals:
+                #     result = f"{game.home_team.name} Win"
+                # elif outcome.home_goals < outcome.away_goals:
+                #     result = f"{game.away_team.name} Win"
+                # print(
+                #     f"Match {game_idx + 1}: {game.home_team.name} {outcome.home_goals} - {outcome.away_goals} {game.away_team.name} ({result})")
 
                 # Update team results
                 if outcome.home_goals > outcome.away_goals:
@@ -182,7 +196,7 @@ class Season:
                     game.home_team.add_result(TeamGameResult.DRAW)
                     game.away_team.add_result(TeamGameResult.DRAW)
 
-                # Get all players for both teams
+                # Update player goals
                 home_players = game.home_team.get_players()
                 away_players = game.away_team.get_players()
 
@@ -215,6 +229,22 @@ class Season:
                 for i in range(len(away_outfield)):
                     player_map[away_outfield[i].name] = away_outfield[i]
 
+                # Track goals scored by each player in this match
+                # goal_counts = HashTableSeparateChaining()
+                # for i in range(len(outcome.goal_scorers)):
+                #     scorer_name = outcome.goal_scorers[i]
+                #     if scorer_name in goal_counts:
+                #         goal_counts[scorer_name] += 1
+                #     else:
+                #         goal_counts[scorer_name] = 1
+                #
+                # # Debug: Print goal scorers
+                # if len(outcome.goal_scorers) > 0:
+                #     print("Goal Scorers:")
+                #     for scorer_name in goal_counts.keys():
+                #         count = goal_counts[scorer_name]
+                #         print(f"  {scorer_name}: {count} goal(s)")
+
                 # Update goals for scorers
                 for i in range(len(outcome.goal_scorers)):
                     scorer_name = outcome.goal_scorers[i]
@@ -223,6 +253,16 @@ class Season:
 
                 # Update leaderboard after each game
                 self.update_leaderboard()
+
+                # Print team points and leaderboard
+                # print("Team Points:")
+                # for i in range(len(self.leaderboard)):
+                #     team = self.leaderboard[i]
+                #     print(f"  {team.name}: {team.points} points")
+                # print("Leaderboard:")
+                # for i in range(len(self.leaderboard)):
+                #     team = self.leaderboard[i]
+                #     print(f"  {i + 1}. {team.name} ({team.points} points)")
 
     def delay_week_of_games(self, orig_week: int, new_week: int | None = None) -> None:
         """
